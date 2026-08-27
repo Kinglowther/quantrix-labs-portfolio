@@ -67,13 +67,55 @@ function ThemeToggle() {
   );
 }
 
+const SITE_URL = "https://davidnjaugithehu.vercel.app";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "David Njau — Full-Stack Developer & Trading Automation Engineer" },
       { name: "description", content: "Portfolio of David Njau — full-stack developer, IT expert, and trading bot engineer based in Nairobi, Kenya." },
+      { name: "keywords", content: "David Njau, David Njau Githehu, full-stack developer Nairobi, web developer Kenya, IT solutions Nairobi, AI specialist Kenya, trading bot developer, MQL5 developer, React developer Nairobi, software engineer Kenya" },
+      { name: "robots", content: "index, follow" },
       { property: "og:title", content: "David Njau — Developer Portfolio" },
       { property: "og:description", content: "Full-Stack Developer | IT Expert | Trading Automation Engineer." },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:image", content: `${SITE_URL}/og-image.png` },
+      { name: "twitter:image", content: `${SITE_URL}/og-image.png` },
+    ],
+    links: [{ rel: "canonical", href: SITE_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "David Njau Githehu",
+          alternateName: "David Njau",
+          url: SITE_URL,
+          image: `${SITE_URL}/og-image.png`,
+          jobTitle: "Full-Stack Developer & AI Specialist",
+          description: "Full-stack developer, IT solutions expert, and trading automation engineer based in Nairobi, Kenya.",
+          address: { "@type": "PostalAddress", addressLocality: "Nairobi", addressCountry: "KE" },
+          knowsAbout: ["Web Development", "React", "Node.js", "Python", "AI Systems", "Trading Automation", "MQL5", "IT Consulting"],
+          sameAs: [
+            "https://github.com/Kinglowther",
+            "https://www.linkedin.com/in/david-njau-githehu-9048831b9/",
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: "David Njau — Software & IT Solutions",
+          url: SITE_URL,
+          description: "Web development, AI systems, trading automation, and IT consulting services.",
+          areaServed: ["Nairobi", "Kenya", "East Africa", "Remote"],
+          provider: { "@type": "Person", name: "David Njau Githehu" },
+          serviceType: ["Web Development", "AI Solutions", "Trading Automation", "IT Consulting"],
+        }),
+      },
     ],
   }),
   component: Index,
