@@ -1,5 +1,71 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { createContext, useContext, useEffect as useEffectReact, useState as useStateReact, ReactNode } from "react";
+
+// Theme context for light/dark mode
+type Theme = "light" | "dark";
+interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useStateReact<Theme>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as Theme) ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    return "dark";
+  });
+
+  useEffectReact(() => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex items-center justify-center w-10 h-10 rounded-md border border-border bg-background/50 hover:bg-background/80 transition-colors"
+      title={theme === "dark" ? "Light mode" : "Dark mode"}
+    >
+      {theme === "dark" ? (
+        <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -256,8 +322,9 @@ function Index() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      {loading && <Loader />}
+    <ThemeProvider>
+      <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+        {loading && <Loader />}
 
       {/* Scroll progress */}
       <div
@@ -309,18 +376,22 @@ function Index() {
           ))}
         </ul>
         <div className="font-mono text-[10px] text-foreground/40">NRB</div>
+        <ThemeToggle />
       </nav>
 
       {/* Mobile header */}
       <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border/60 bg-background/70 px-5 py-4 backdrop-blur md:hidden">
         <div className="neon-text font-display text-lg font-bold">DN<span className="text-foreground">/</span></div>
-        <button
-          aria-label="Menu"
-          onClick={() => setMenuOpen((o) => !o)}
-          className="neon-text font-mono text-sm"
-        >
-          {menuOpen ? "[ close ]" : "[ menu ]"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            aria-label="Menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="neon-text font-mono text-sm"
+          >
+            {menuOpen ? "[ close ]" : "[ menu ]"}
+          </button>
+          <ThemeToggle />
+        </div>
       </header>
       {menuOpen && (
         <div className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur md:hidden">
@@ -495,6 +566,7 @@ function Index() {
               {"return "}<span className="neon-text">connect</span>(<span className="neon-text">&quot;david&quot;</span>);
             </p>
           </div>
+          <ContactForm />
           <div className="mt-12 grid gap-4 md:grid-cols-2">
             <ContactCard label="Email" value="pdnjau710@gmail.com" href="mailto:pdnjau710@gmail.com" />
             <ContactCard label="GitHub" value="@Kinglowther" href="https://github.com/Kinglowther" />
@@ -510,7 +582,8 @@ function Index() {
       {openProject !== null && (
         <ProjectModal project={PROJECTS[openProject]} idx={openProject} onClose={() => setOpenProject(null)} />
       )}
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
@@ -637,6 +710,89 @@ function ProjectCard({
         <span className="neon-text font-mono text-sm">view project →</span>
       </div>
     </div>
+  );
+}
+
+function ContactForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "error" | "sent">("idle");
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !message.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("error");
+      return;
+    }
+    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
+    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+    window.location.href = `mailto:pdnjau710@gmail.com?subject=${subject}&body=${body}`;
+    setStatus("sent");
+  };
+
+  const inputCls =
+    "w-full rounded-md border border-border bg-background/60 px-4 py-3 font-mono text-sm text-foreground placeholder:text-foreground/40 outline-none transition focus:border-[var(--neon)]";
+
+  return (
+    <form
+      data-reveal
+      onSubmit={onSubmit}
+      className="mt-12 max-w-3xl rounded-md border border-border bg-[var(--code-bg)] p-6 shadow-2xl"
+    >
+      <div className="mb-6 flex items-center gap-2 border-b border-border pb-3">
+        <span className="h-3 w-3 rounded-full bg-red-500/70" />
+        <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+        <span className="h-3 w-3 rounded-full bg-green-500/70" />
+        <span className="ml-3 font-mono text-sm text-foreground/50">get_a_free_quote.ts</span>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="your_name"
+          aria-label="Your name"
+          className={inputCls}
+        />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          aria-label="Your email"
+          className={inputCls}
+        />
+      </div>
+      <textarea
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="// your message..."
+        aria-label="Your message"
+        rows={5}
+        className={`${inputCls} mt-4 resize-y`}
+      />
+      <div className="mt-6 flex flex-wrap items-center gap-4">
+        <button
+          type="submit"
+          className="neon-glow group flex items-center gap-2 border border-[var(--neon)] bg-[color-mix(in_oklab,var(--neon)_10%,transparent)] px-6 py-3 font-mono text-sm transition hover:bg-[color-mix(in_oklab,var(--neon)_20%,transparent)]"
+        >
+          <span className="neon-text">&lt;</span>
+          send message
+          <span className="neon-text">/&gt;</span>
+        </button>
+        {status === "error" && (
+          <span className="font-mono text-xs text-red-400">
+            {"// error: fill all fields with a valid email"}
+          </span>
+        )}
+        {status === "sent" && (
+          <span className="neon-text font-mono text-xs">
+            {"// opening your mail client — message ready to send"}
+          </span>
+        )}
+      </div>
+    </form>
   );
 }
 
