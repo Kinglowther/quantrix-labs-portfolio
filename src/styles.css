@@ -215,3 +215,24 @@
 .tilt-card > * { transform: translateZ(40px); transform-style: preserve-3d; }
 
 .parallax-y { transform: translate3d(0, calc(var(--scroll, 0) * 1px), 0); will-change: transform; }
+
+/* Stacked card glassmorphism — uses existing theme tokens, no new palette */
+.glass-card {
+  background: color-mix(in oklab, var(--background) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in oklab, var(--neon) 20%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--neon) 8%, transparent),
+    0 0 60px color-mix(in oklab, var(--neon) 7%, transparent),
+    0 24px 64px rgba(0, 0, 0, 0.3);
+  will-change: transform, filter;
+}
+
+/* prefers-reduced-motion: disable scale/filter on stack cards */
+@media (prefers-reduced-motion: reduce) {
+  [data-stack-card] {
+    transform: none !important;
+    filter: none !important;
+  }
+}

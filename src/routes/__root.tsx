@@ -77,16 +77,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "David Njau — Full-Stack Developer & AI Specialist in Nairobi" },
-      { name: "description", content: "David Njau Githehu — full-stack developer, IT solutions expert, and AI/trading automation engineer based in Nairobi, Kenya. Available for web development, AI systems, and IT consulting." },
-      { name: "author", content: "David Njau Githehu" },
-      { property: "og:title", content: "David Njau — Full-Stack Developer & AI Specialist" },
-      { property: "og:description", content: "Web development, IT solutions, AI systems, and trading automation — Nairobi, Kenya." },
+      { title: "Quantrix Labs — Engineering Intelligence | by David Njau Githehu" },
+      {
+        name: "description",
+        content:
+          "Quantrix Labs — a software development studio founded by David Njau Githehu. Delivering web products, AI-integrated systems, and IT infrastructure from Nairobi, Kenya.",
+      },
+      { name: "author", content: "Quantrix Labs — David Njau Githehu" },
+      { property: "og:title", content: "Quantrix Labs — Engineering Intelligence" },
+      {
+        property: "og:description",
+        content:
+          "Software studio delivering web products, AI-integrated systems, and IT infrastructure. Founded by David Njau Githehu, Nairobi, Kenya.",
+      },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "David Njau" },
+      { property: "og:site_name", content: "Quantrix Labs" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "David Njau — Full-Stack Developer & AI Specialist" },
-      { name: "twitter:description", content: "Web development, IT solutions, AI systems, and trading automation — Nairobi, Kenya." },
+      { name: "twitter:title", content: "Quantrix Labs — Engineering Intelligence" },
+      {
+        name: "twitter:description",
+        content:
+          "Software studio delivering web products, AI-integrated systems, and IT infrastructure — Nairobi, Kenya.",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -102,7 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "icon",
         type: "image/svg+xml",
-        href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='15' fill='%230a0a0a'/%3E%3Ctext x='50' y='62' font-family='monospace' font-size='40' font-weight='bold' fill='%2300ff41' text-anchor='middle'%3EDN%3C/text%3E%3C/svg%3E",
+        href: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='15' fill='%230a0a0a'/%3E%3Ctext x='50' y='62' font-family='monospace' font-size='32' font-weight='bold' fill='%2300ff41' text-anchor='middle'%3EQL%3C/text%3E%3C/svg%3E",
       },
     ],
   }),
