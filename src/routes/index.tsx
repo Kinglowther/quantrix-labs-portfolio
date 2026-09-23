@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { createContext, useContext, useEffect as useEffectReact, useState as useStateReact, type ReactNode } from "react";
+import { ExternalLink, Globe, Mail } from "lucide-react";
 
 // Static asset imports — Vite resolves these to hashed URLs
 import darkLogoSrc from "../assets/BLACK LOGO HD.png";
@@ -188,12 +189,81 @@ const SECTIONS = [
 
 const ROLES = ["Web & Product Development", "AI-Integrated Systems", "Infrastructure & DevOps"];
 
-const PROJECTS = [
+interface PlatformDetail {
+  title: string;
+  badge: string;
+  summary: string;
+  highlights: string[];
+}
+
+interface WebsiteDetail {
+  title: string;
+  url: string;
+  category: string;
+  desc: string;
+}
+
+interface ProjectItem {
+  name: string;
+  stack: string;
+  desc: string;
+  snippet: string;
+  platforms?: PlatformDetail[];
+  websites?: WebsiteDetail[];
+}
+
+const PROJECTS: ProjectItem[] = [
   {
-    name: "Abacus Workspace",
-    stack: "React · Supabase Edge Functions · Claude API",
-    desc: "AI-powered multi-tenant operations platform engineered by Quantrix Labs. Agent-driven workflows built on Claude replace manual ops pipelines across teams.",
-    snippet: `const agent = new ClaudeAgent({\n  model: "claude-opus-4-5",\n  tools: [...workflowTools],\n});\nawait agent.run(operationsCtx);`,
+    name: "Automations & Operation Platforms",
+    stack: "AI Workflows · FinTech · Custom Operations · Quant Tools",
+    desc: "Bespoke operations platforms, algorithmic trading workflows, discipline-focused tracking apps, and high-efficiency enterprise tools engineered by Quantrix Labs.",
+    snippet: `// Quantrix Automation & Operations Engine\nconst engine = new PlatformCluster({\n  subsystems: ["AbacusWorkspace", "MarketExecution", "AscendJournal"],\n  orchestrator: "Quantrix-Core",\n});\nawait engine.initializePipelines();`,
+    platforms: [
+      {
+        title: "Abacus Workspace",
+        badge: "Enterprise Operations",
+        summary:
+          "AI-powered multi-tenant operations ecosystem and enterprise workflow hub. Agent-driven pipelines built on Claude and Supabase Edge Functions replace manual ops pipelines across teams, automating real estate client routing, record dispatching, and transaction workflows.",
+        highlights: [
+          "Agent-driven Claude workflows",
+          "Multi-tenant data isolation",
+          "Autonomous pipeline dispatching",
+        ],
+      },
+      {
+        title: "Trading & Stock Market Automation Tools",
+        badge: "FinTech & Quant Systems",
+        summary:
+          "Algorithmic execution engines, automated quantitative market scanners, and real-time stock/crypto alert frameworks. Designed with low-latency APIs to spot technical setups, manage risk parameters, and automate trade entries, exits, and notifications.",
+        highlights: [
+          "Real-time market scanning",
+          "Automated execution & alert triggers",
+          "Algorithmic risk controls",
+        ],
+      },
+      {
+        title: "Ascend Roadmap",
+        badge: "Trading Self-Tracking & Journal",
+        summary:
+          "A proprietary trading self-tracking and discipline journal web application engineered to elevate trader psychology. Logs trades, tracks win rates and drawdowns, scores discipline adherence, and identifies edge patterns through comprehensive visual analytics.",
+        highlights: [
+          "Rule compliance & discipline scoring",
+          "Interactive trade journaling",
+          "Equity curve & drawdown analytics",
+        ],
+      },
+      {
+        title: "Bespoke Internal & Ops Platforms",
+        badge: "Custom Tooling",
+        summary:
+          "Custom business operations engines, inventory management suites, automated client invoicing systems, and telemetry dashboards built to remove repetitive overhead and scale team operations.",
+        highlights: [
+          "Zero-friction workflow integrations",
+          "Scheduled automated reporting",
+          "Custom operational bots",
+        ],
+      },
+    ],
   },
   {
     name: "Registry",
@@ -205,7 +275,39 @@ const PROJECTS = [
     name: "Website Build, Revamp & Optimization",
     stack: "React · Netlify · SEO · Performance",
     desc: "Studio-wide web delivery across all three modes: ground-up builds, redesigns, and performance/SEO optimization across client sites.",
-    snippet: `// Lighthouse: perf 97 · SEO 100\nconst report = await audit(url);\nawait deploy({ edge: true,\n  prerender: staticRoutes });`,
+    snippet: `// Lighthouse: perf 98 · SEO 100\nconst report = await audit(url);\nawait deploy({ edge: true,\n  prerender: staticRoutes });`,
+    websites: [
+      {
+        title: "Portfolio",
+        url: "https://davidnjaugithehu.vercel.app/",
+        category: "Digital Showcase & Studio",
+        desc: "Flagship personal portfolio and interactive digital engineering laboratory featuring modern 3D depth, particle physics, and sleek dark mode aesthetics.",
+      },
+      {
+        title: "BBQ Restaurant with Online Ordering",
+        url: "https://fillyzbbq.vercel.app/",
+        category: "Restaurant & E-Commerce",
+        desc: "High-conversion BBQ restaurant web platform featuring dynamic digital menus, real-time online ordering flow, WhatsApp integration, and table reservations.",
+      },
+      {
+        title: "Property Agency Site",
+        url: "https://www.abacus-property.com/",
+        category: "Real Estate & Commercial",
+        desc: "Corporate property agency website for Abacus Property Consultants, showcasing commercial and residential listings with structured lead capture funnels.",
+      },
+      {
+        title: "Clothing Store Portfolio",
+        url: "https://finderskeeperske.vercel.app/",
+        category: "Fashion & Retail Showcase",
+        desc: "Curated thrift and fashion brand showcase with responsive product galleries, editorial lookbooks, and high-conversion aesthetic design.",
+      },
+      {
+        title: "Outdoor Community",
+        url: "https://dndunplugged.vercel.app/",
+        category: "Adventure & Community Hub",
+        desc: "Vibrant outdoor travel and hiking community platform connecting explorers, featuring upcoming expedition schedules, registration flows, and photo archives.",
+      },
+    ],
   },
   {
     name: "Abacus IT Systems",
@@ -218,7 +320,7 @@ const PROJECTS = [
 const SKILLS = [
   {
     title: "Web & Product Development",
-    items: ["React", "Three.js", "Tailwind", "Node.js", "FastAPI", "PostgreSQL"],
+    items: ["React", "Three.js", "Tailwind", "Node.js", "FastAPI", "PostgreSQL", "SEO & Optimization"],
   },
   {
     title: "AI-Integrated Systems",
@@ -227,6 +329,15 @@ const SKILLS = [
   {
     title: "Infrastructure & DevOps",
     items: ["Docker", "CI/CD", "Git", "Linux", "Nginx"],
+  },
+  {
+    title: "Graphics, Design & Growth",
+    items: [
+      "Graphics & Brand Design",
+      "Social Media Strategy & Content",
+      "Google Ads Campaigns",
+      "Google Analytics & Conversion Tracking",
+    ],
   },
 ];
 
@@ -729,7 +840,7 @@ function Index() {
               style={GLASS_STYLE}
             >
               <SectionHeader num="04" title="What Quantrix Labs Offers" />
-              <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-12 grid gap-6 md:grid-cols-2">
                 {SKILLS.map((cat) => (
                   <div
                     key={cat.title}
@@ -783,15 +894,22 @@ function Index() {
               </div>
               <ContactForm />
               <div className="mt-12 grid gap-4 md:grid-cols-2">
-                <ContactCard label="Email" value="pdnjau710@gmail.com" href="mailto:pdnjau710@gmail.com" />
+                <ContactCard
+                  label="Email"
+                  value="Mail to us"
+                  icon={<Mail className="h-5 w-5 text-[var(--neon)]" />}
+                  href="mailto:pdnjau710@gmail.com"
+                />
                 <ContactCard label="GitHub" value="@Kinglowther" href="https://github.com/Kinglowther" />
                 <ContactCard label="LinkedIn" value="David Njau Githehu" href="https://www.linkedin.com/in/david-njau-githehu-9048831b9/" />
                 <ContactCard label="WHATSAPP" value="Whatsapp Me</>" href="https://wa.me/254743049871" />
               </div>
               <footer className="mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8 font-mono text-xs text-foreground/40">
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <span>{"// © " + new Date().getFullYear() + " quantrix labs. all systems operational."}</span>
-                  <span className="text-foreground/30 text-[10px]">by David Njau Githehu</span>
+                  <div className="footer-glow mt-1 font-mono text-xs md:text-sm font-medium tracking-wide">
+                    Built and Designed in House - by David Njau Githehu
+                  </div>
                 </div>
                 <span className="neon-text">[ NRB · KE ]</span>
               </footer>
@@ -959,13 +1077,31 @@ function ContactForm() {
   );
 }
 
-function ContactCard({ label, value, href }: { label: string; value: string; href: string }) {
+function ContactCard({
+  label,
+  value,
+  href,
+  icon,
+}: {
+  label: string;
+  value: string;
+  href: string;
+  icon?: ReactNode;
+}) {
   return (
-    <a data-reveal href={href} target="_blank" rel="noreferrer"
-      className="group flex items-center justify-between border border-border bg-background/40 p-6 backdrop-blur transition hover:border-[var(--neon)]">
+    <a
+      data-reveal
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="group flex items-center justify-between border border-border bg-background/40 p-6 backdrop-blur transition hover:border-[var(--neon)]"
+    >
       <div>
         <div className="font-mono text-[11px] uppercase tracking-widest text-foreground/50">{label}</div>
-        <div className="mt-1 font-display text-xl font-semibold group-hover:[color:var(--neon)]">{value}</div>
+        <div className="mt-1 flex items-center gap-2.5 font-display text-xl font-semibold group-hover:[color:var(--neon)]">
+          {icon}
+          <span>{value}</span>
+        </div>
       </div>
       <span className="neon-text font-mono text-lg transition group-hover:translate-x-1">→</span>
     </a>
@@ -1000,48 +1136,174 @@ function FloatingFragments({ innerRef }: { innerRef?: React.RefObject<HTMLDivEle
 }
 
 function ProjectModal({
-  project, idx, onClose,
+  project,
+  idx,
+  onClose,
 }: {
-  project: { name: string; stack: string; desc: string; snippet: string };
-  idx: number; onClose: () => void;
+  project: ProjectItem;
+  idx: number;
+  onClose: () => void;
 }) {
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
   }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-background/80 p-4 backdrop-blur-md"
-      onClick={onClose} style={{ animation: "fade-in 0.2s ease-out" }}>
-      <div onClick={(e) => e.stopPropagation()}
-        className="neon-glow relative w-full max-w-2xl overflow-hidden rounded-md border border-[var(--neon)] bg-background"
-        style={{ animation: "scale-in 0.25s ease-out" }}>
-        <div className="flex items-center justify-between border-b border-border bg-[var(--code-bg)] px-5 py-3">
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-background/80 p-3 md:p-6 backdrop-blur-md"
+      onClick={onClose}
+      style={{ animation: "fade-in 0.2s ease-out" }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="neon-glow relative flex flex-col w-full max-w-3xl overflow-hidden rounded-xl border border-[var(--neon)] bg-background max-h-[90vh] shadow-2xl"
+        style={{ animation: "scale-in 0.25s ease-out" }}
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-[var(--code-bg)] px-5 py-3.5">
           <div className="flex items-center gap-2 font-mono text-xs text-foreground/60">
             <span className="h-3 w-3 rounded-full bg-red-500/70" />
             <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
             <span className="h-3 w-3 rounded-full bg-green-500/70" />
-            <span className="ml-3">{`project_${String(idx + 1).padStart(2, "0")}.ts`}</span>
+            <span className="ml-3 font-semibold text-foreground/75">{`project_${String(idx + 1).padStart(2, "0")}.ts`}</span>
           </div>
-          <button onClick={onClose} className="neon-text font-mono text-sm hover:opacity-70">[ esc ]</button>
+          <button
+            onClick={onClose}
+            className="neon-text font-mono text-xs md:text-sm hover:opacity-75 transition-opacity px-2.5 py-1 rounded border border-border/50 hover:border-[var(--neon)]"
+            aria-label="Close modal"
+          >
+            [ esc / ✕ close ]
+          </button>
         </div>
-        <div className="p-6">
-          <div className="font-mono text-[11px] uppercase tracking-widest text-foreground/50">{project.stack}</div>
-          <h3 className="mt-2 font-display text-3xl font-bold">{project.name}</h3>
-          <p className="mt-3 font-mono text-sm text-foreground/70">{project.desc}</p>
-          <pre className="mt-6 overflow-x-auto rounded-md border border-border bg-[var(--code-bg)] p-4 font-mono text-xs leading-relaxed text-foreground/90">
-            {project.snippet}
-          </pre>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 font-mono text-xs">
-            <div className="rounded-md border border-border p-3">
-              <div className="text-foreground/40">status</div>
-              <div className="neon-text mt-1">deployed · operational</div>
+
+        <div className="overflow-y-auto p-6 md:p-8 custom-modal-scrollbar space-y-6">
+          <div>
+            <div className="inline-block rounded border border-border/80 bg-background/60 px-2.5 py-1 font-mono text-[10px] md:text-[11px] uppercase tracking-widest text-foreground/60">
+              {project.stack}
             </div>
-            <div className="rounded-md border border-border p-3">
-              <div className="text-foreground/40">delivered by</div>
-              <div className="neon-text mt-1">Quantrix Labs</div>
+            <h3 className="mt-2.5 font-display text-2xl md:text-3xl font-bold tracking-tight">
+              {project.name}
+            </h3>
+            <p className="mt-3 font-mono text-sm leading-relaxed text-foreground/70">
+              {project.desc}
+            </p>
+          </div>
+
+          {/* Conditional 1: Platforms breakdown */}
+          {project.platforms && (
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center gap-2 font-mono text-xs text-foreground/50 border-b border-border/60 pb-2">
+                <span className="neon-text">{"//"}</span>
+                <span className="uppercase tracking-wider font-semibold">Automations, Platforms &amp; Quant Tools</span>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {project.platforms.map((plat) => (
+                  <div
+                    key={plat.title}
+                    className="flex flex-col justify-between rounded-lg border border-border bg-background/50 p-5 transition hover:border-[var(--neon)] hover:bg-background/80"
+                  >
+                    <div>
+                      <div className="neon-text font-mono text-[10px] uppercase tracking-widest font-semibold">
+                        [ {plat.badge} ]
+                      </div>
+                      <h4 className="mt-1.5 font-display text-lg font-bold text-foreground">
+                        {plat.title}
+                      </h4>
+                      <p className="mt-2 font-mono text-xs leading-relaxed text-foreground/70">
+                        {plat.summary}
+                      </p>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-1.5 pt-3 border-t border-border/40">
+                      {plat.highlights.map((h) => (
+                        <span
+                          key={h}
+                          className="rounded border border-border/60 bg-[var(--code-bg)] px-2 py-0.5 font-mono text-[10px] text-foreground/75"
+                        >
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Conditional 2: Built websites with active links */}
+          {project.websites && (
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2 font-mono text-xs text-foreground/50">
+                <div className="flex items-center gap-2">
+                  <span className="neon-text">{"//"}</span>
+                  <span className="uppercase tracking-wider font-semibold">Top Selection of Built Websites</span>
+                </div>
+                <span className="text-[11px] neon-text">5 Active Deployments</span>
+              </div>
+              <div className="space-y-3.5">
+                {project.websites.map((site) => (
+                  <div
+                    key={site.title}
+                    className="group relative flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-lg border border-border bg-background/50 p-4 md:p-5 transition hover:border-[var(--neon)] hover:bg-background/80"
+                  >
+                    <div className="space-y-1.5 max-w-xl">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="neon-text font-mono text-xs">●</span>
+                        <h4 className="font-display text-base md:text-lg font-bold text-foreground group-hover:text-[var(--neon)] transition-colors">
+                          {site.title}
+                        </h4>
+                        <span className="rounded border border-border/60 bg-[var(--code-bg)] px-2 py-0.5 font-mono text-[10px] text-foreground/60">
+                          {site.category}
+                        </span>
+                      </div>
+                      <p className="font-mono text-xs leading-relaxed text-foreground/70 pl-4">
+                        {site.desc}
+                      </p>
+                    </div>
+                    <div className="shrink-0 pl-4 md:pl-0">
+                      <a
+                        href={site.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-md border border-[var(--neon)] bg-[color-mix(in_oklab,var(--neon)_12%,transparent)] px-4 py-2 font-mono text-xs font-semibold text-foreground transition hover:bg-[color-mix(in_oklab,var(--neon)_25%,transparent)] hover:scale-[1.03]"
+                      >
+                        <Globe className="h-3.5 w-3.5 text-[var(--neon)]" />
+                        <span>Visit Site</span>
+                        <ExternalLink className="h-3.5 w-3.5 text-[var(--neon)]" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Execution snippet */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 font-mono text-xs text-foreground/50">
+              <span className="neon-text">{"//"}</span>
+              <span>execution_sample</span>
+            </div>
+            <pre className="overflow-x-auto rounded-md border border-border bg-[var(--code-bg)] p-4 font-mono text-xs leading-relaxed text-foreground/90">
+              {project.snippet}
+            </pre>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 font-mono text-xs pt-1">
+            <div className="rounded-md border border-border p-3.5 bg-background/40">
+              <div className="text-foreground/40 text-[10px] uppercase tracking-wider">status</div>
+              <div className="neon-text mt-1 font-semibold">deployed · operational in production</div>
+            </div>
+            <div className="rounded-md border border-border p-3.5 bg-background/40">
+              <div className="text-foreground/40 text-[10px] uppercase tracking-wider">delivered by</div>
+              <div className="neon-text mt-1 font-semibold">Quantrix Labs — David Njau Githehu</div>
             </div>
           </div>
         </div>

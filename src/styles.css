@@ -236,3 +236,41 @@
     filter: none !important;
   }
 }
+
+/* Glowing footer credit effect */
+@keyframes pulse-footer-glow {
+  0% {
+    text-shadow:
+      0 0 6px color-mix(in oklab, var(--neon) 80%, transparent),
+      0 0 16px color-mix(in oklab, var(--neon) 50%, transparent);
+    opacity: 0.92;
+  }
+  100% {
+    text-shadow:
+      0 0 10px color-mix(in oklab, var(--neon) 100%, transparent),
+      0 0 24px color-mix(in oklab, var(--neon) 80%, transparent),
+      0 0 42px color-mix(in oklab, var(--neon) 55%, transparent);
+    opacity: 1;
+  }
+}
+
+.footer-glow {
+  color: var(--neon);
+  animation: pulse-footer-glow 2.4s ease-in-out infinite alternate;
+  display: inline-block;
+}
+
+/* Custom scrollbar for rich project modals */
+.custom-modal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-modal-scrollbar::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--background) 90%, transparent);
+}
+.custom-modal-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--neon) 40%, var(--border));
+  border-radius: 9999px;
+}
+.custom-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--neon);
+}
