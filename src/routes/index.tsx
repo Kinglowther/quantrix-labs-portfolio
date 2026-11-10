@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { createContext, useContext, useEffect as useEffectReact, useState as useStateReact, type ReactNode } from "react";
 import { ExternalLink, Globe, Mail } from "lucide-react";
+import { useCursorSwarm } from "../hooks/use-cursor-swarm";
 
 // Static asset imports — Vite resolves these to hashed URLs
 import darkLogoSrc from "../assets/BLACK LOGO HD.png";
@@ -348,7 +349,7 @@ const STATS = [
   { value: 99, suffix: "%", label: "Uptime delivered" },
 ];
 
-// Shared glassmorphism inline style for all stack-card sections
+// Shared static glassmorphism style for the section cards (the CursorSwarm draws them in live)
 const GLASS_STYLE: React.CSSProperties = {
   background: "transparent",
   backdropFilter: "blur(2px)",
@@ -358,7 +359,6 @@ const GLASS_STYLE: React.CSSProperties = {
     "0 0 0 1px color-mix(in oklab, var(--neon) 10%, transparent)",
     "0 0 60px color-mix(in oklab, var(--neon) 8%, transparent)",
   ].join(", "),
-  willChange: "transform, filter",
 };
 
 // ---------------------------------------------------------------------------
@@ -375,15 +375,14 @@ function Index() {
   const progressRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const fragRef = useRef<HTMLDivElement>(null);
+  // Agent cursors build the page as you scroll. `settled` stays false until the library has
+  // loaded so the boot loader can cover the page and hide any flash.
+  const { settled } = useCursorSwarm(!loading);
 
   // rAF-throttled scroll: writes directly to DOM (zero React re-renders on scroll).
-  // Handles: progress bar, hero parallax/fade, frag parallax, stack-card recede.
+  // Handles: progress bar, hero fade, frag parallax.
   useEffect(() => {
     let ticking = false;
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     const apply = () => {
       ticking = false;
       const y = window.scrollY;
@@ -393,38 +392,11 @@ function Index() {
       if (progressRef.current) progressRef.current.style.width = `${p * 100}%`;
 
       if (heroRef.current) {
-        const scale = Math.max(0.85, 1 - y / 2400);
-        heroRef.current.style.transform = `translate3d(0, ${y * 0.35}px, 0) scale(${scale})`;
         heroRef.current.style.opacity = String(Math.max(0, 1 - y / 700));
       }
 
       if (fragRef.current) {
         fragRef.current.style.setProperty("--sy", String(y));
-      }
-
-      // Stack-card recede: as the NEXT card rises, scale + dim the current one.
-      // transform/filter only — no layout thrash.
-      if (!reduce) {
-        const stackCards = document.querySelectorAll<HTMLElement>("[data-stack-card]");
-        const vh = window.innerHeight;
-        stackCards.forEach((card, i) => {
-          if (i >= stackCards.length - 1) {
-            card.style.transform = "";
-            card.style.filter = "";
-            return;
-          }
-          const nextCard = stackCards[i + 1] as HTMLElement;
-          const nextTop = nextCard.getBoundingClientRect().top;
-          // progress 0 = next card at viewport bottom, 1 = next card fully at top
-          const progress = Math.max(0, Math.min(1, 1 - nextTop / vh));
-          if (progress > 0) {
-            card.style.transform = `scale(${(1 - progress * 0.06).toFixed(4)}) translateZ(0)`;
-            card.style.filter = `brightness(${(1 - progress * 0.40).toFixed(4)})`;
-          } else {
-            card.style.transform = "";
-            card.style.filter = "";
-          }
-        });
       }
     };
 
@@ -580,11 +552,12 @@ function Index() {
   return (
     <ThemeProvider>
       <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-        {loading && <Loader />}
+        {(loading || !settled) && <Loader />}
 
         {/* Scroll progress bar */}
         <div
           ref={progressRef}
+          data-cs-ignore
           className="pointer-events-none fixed left-0 top-0 z-50 h-[2px]"
           style={{
             width: "0%",
@@ -595,9 +568,14 @@ function Index() {
         />
 
         {/* Background layers */}
-        <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0 opacity-60" />
+        <canvas
+          ref={canvasRef}
+          data-cs-ignore
+          className="pointer-events-none fixed inset-0 z-0 opacity-60"
+        />
         <FloatingFragments innerRef={fragRef} />
         <div
+          data-cs-ignore
           className="pointer-events-none fixed inset-x-0 top-0 z-10 h-px"
           style={{
             background: "linear-gradient(90deg, transparent, var(--neon), transparent)",
@@ -607,7 +585,7 @@ function Index() {
         />
 
         {/* ── Sidebar nav — structure & behaviour unchanged ── */}
-        <nav className="fixed left-0 top-0 z-40 hidden h-screen w-20 flex-col items-center justify-between border-r border-border/60 bg-background/40 py-8 backdrop-blur md:flex lg:w-28">
+        <nav data-cs-ignore className="fixed left-0 top-0 z-40 hidden h-screen w-20 flex-col items-center justify-between border-r border-border/60 bg-background/40 py-8 backdrop-blur md:flex lg:w-28">
           <LogoMark className="h-8 w-auto max-w-[56px] object-contain px-1" />
           <ul className="flex flex-col gap-6">
             {SECTIONS.map((s, i) => (
@@ -635,7 +613,7 @@ function Index() {
         </nav>
 
         {/* Mobile header */}
-        <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border/60 bg-background/70 px-5 py-4 backdrop-blur md:hidden">
+        <header data-cs-ignore className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border/60 bg-background/70 px-5 py-4 backdrop-blur md:hidden">
           <LogoMark className="h-7 w-auto object-contain" />
           <div className="flex items-center gap-2">
             <button
@@ -649,7 +627,7 @@ function Index() {
           </div>
         </header>
         {menuOpen && (
-          <div className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur md:hidden">
+          <div data-cs-ignore className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur md:hidden">
             {SECTIONS.map((s, i) => (
               <button key={s.id} onClick={() => scrollTo(s.id)} className="font-display text-3xl font-bold">
                 <span className="neon-text font-mono text-sm">{String(i + 1).padStart(2, "0")}.</span>{" "}
@@ -664,7 +642,7 @@ function Index() {
 
           {/* HERO — not a stack card */}
           <section id="hero" data-section className="flex min-h-screen items-center px-6 pt-24 md:px-16 md:pt-0">
-            <div ref={heroRef} className="w-full max-w-5xl" style={{ willChange: "transform, opacity" }}>
+            <div ref={heroRef} className="w-full max-w-5xl" style={{ willChange: "opacity" }}>
               <p className="neon-text mb-6 font-mono text-sm tracking-widest">
                 {"// initializing quantrix_labs..."}
               </p>
@@ -682,7 +660,7 @@ function Index() {
                 Engineering Intelligence.
               </p>
               {/* Typewriter */}
-              <div className="mt-8 font-mono text-xl md:text-2xl">
+              <div data-cs-ignore className="mt-8 font-mono text-xl md:text-2xl">
                 <span className="text-foreground/50">{"const focus = "}</span>
                 <span className="neon-text">&quot;{typed}&quot;</span>
                 <span
@@ -721,19 +699,18 @@ function Index() {
             </div>
           </section>
 
-          {/* ── STACKED SECTIONS ──────────────────────────────────────────────
-              Each section sits in a wrapper with pb-[30vh] so the sticky card
-              has 30 vh of scroll-through before the next card rises over it.
-              Z-indices increase per card; rAF scroll handler drives the recede.
+          {/* ── SECTION CARDS ─────────────────────────────────────────────────
+              Static glass-neon cards in normal flow. The CursorSwarm (see
+              hooks/use-cursor-swarm.ts) draws each card and writes its content
+              live as you scroll; scrolling back up un-builds it again.
           ─────────────────────────────────────────────────────────────────── */}
 
-          {/* ABOUT — z=10 */}
-          <div className="pb-[50vh]">
+          {/* ABOUT */}
+          <div className="mb-10 md:mb-16">
             <section
               id="about"
               data-section
-              data-stack-card
-              className="sticky top-0 z-10 min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
+              className="relative min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
               style={GLASS_STYLE}
             >
               <SectionHeader num="02" title="About" />
@@ -812,13 +789,12 @@ function Index() {
             </section>
           </div>
 
-          {/* PROJECTS — z=20 */}
-          <div className="pb-[50vh] -mt-[50vh]">
+          {/* PROJECTS */}
+          <div className="mb-10 md:mb-16">
             <section
               id="projects"
               data-section
-              data-stack-card
-              className="sticky top-0 z-20 min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
+              className="relative min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
               style={GLASS_STYLE}
             >
               <SectionHeader num="03" title="What We've Built" />
@@ -830,13 +806,12 @@ function Index() {
             </section>
           </div>
 
-          {/* SKILLS — z=30 */}
-          <div className="pb-[50vh] -mt-[50vh]">
+          {/* SKILLS */}
+          <div className="mb-10 md:mb-16">
             <section
               id="skills"
               data-section
-              data-stack-card
-              className="sticky top-0 z-30 min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
+              className="relative min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
               style={GLASS_STYLE}
             >
               <SectionHeader num="04" title="What Quantrix Labs Offers" />
@@ -868,13 +843,12 @@ function Index() {
             </section>
           </div>
 
-          {/* CONTACT — z=35 (below sidebar z=40) */}
-          <div className="-mt-[50vh]">
+          {/* CONTACT */}
+          <div>
             <section
               id="contact"
               data-section
-              data-stack-card
-              className="sticky top-0 z-[35] min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
+              className="relative min-h-screen px-6 py-32 md:px-16 mx-2 md:mx-4 rounded-xl"
               style={{
                 ...GLASS_STYLE,
               }}
@@ -967,7 +941,7 @@ function Stat({ value, suffix, label }: { value: number; suffix: string; label: 
   }, [value]);
   return (
     <div ref={ref}>
-      <div className="neon-text font-display text-4xl font-bold md:text-5xl">
+      <div data-cs-ignore className="neon-text font-display text-4xl font-bold md:text-5xl">
         {n}{suffix}
       </div>
       <div className="mt-1 font-mono text-xs uppercase tracking-widest text-foreground/50">
@@ -1120,7 +1094,12 @@ function FloatingFragments({ innerRef }: { innerRef?: React.RefObject<HTMLDivEle
     drift: ((i % 4) - 1.5) * 20,
   }));
   return (
-    <div ref={innerRef} className="pointer-events-none fixed inset-0 z-0 overflow-hidden" style={{ ["--sy" as never]: "0" }}>
+    <div
+      ref={innerRef}
+      data-cs-ignore
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      style={{ ["--sy" as never]: "0" }}
+    >
       {items.map((f, i) => (
         <span key={i} className="neon-text absolute font-mono" style={{
           left: `${f.left}%`, bottom: "-10vh", fontSize: f.size, opacity: 0.25,
@@ -1159,6 +1138,7 @@ function ProjectModal({
 
   return (
     <div
+      data-cs-ignore
       className="fixed inset-0 z-[90] flex items-center justify-center bg-background/80 p-3 md:p-6 backdrop-blur-md"
       onClick={onClose}
       style={{ animation: "fade-in 0.2s ease-out" }}
@@ -1320,7 +1300,10 @@ function Loader() {
     return () => clearInterval(id);
   }, [text.length]);
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background">
+    <div
+      data-cs-ignore
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
+    >
       <pre className="neon-text font-mono text-sm md:text-base">
         {text.slice(0, n)}
         <span style={{ animation: "blink 1s steps(1) infinite" }}>▌</span>

@@ -229,12 +229,11 @@
   will-change: transform, filter;
 }
 
-/* prefers-reduced-motion: disable scale/filter on stack cards */
-@media (prefers-reduced-motion: reduce) {
-  [data-stack-card] {
-    transform: none !important;
-    filter: none !important;
-  }
+/* CursorSwarm owns entrance animation while it runs. The legacy .revealed animation uses
+   `both` fill-mode, which would override the swarm's inline hiding and show elements early. */
+html.swarm-on .revealed {
+  animation: none;
+  will-change: auto;
 }
 
 /* Glowing footer credit effect */
