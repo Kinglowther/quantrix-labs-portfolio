@@ -489,15 +489,27 @@ function Index() {
     const onVis = () => { paused = document.hidden; };
     document.addEventListener("visibilitychange", onVis);
 
+    let isDark = document.documentElement.classList.contains("dark");
+    const themeObserver = new MutationObserver(() => {
+      const nextIsDark = document.documentElement.classList.contains("dark");
+      if (nextIsDark !== isDark) {
+        isDark = nextIsDark;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
     let frame = 0;
     const draw = () => {
       if (paused || reduce) { raf = requestAnimationFrame(draw); return; }
       frame++;
-      ctx.fillStyle = "rgba(10,10,10,0.25)";
+      ctx.fillStyle = isDark ? "rgba(10,10,10,0.25)" : "rgba(252,252,252,0.25)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      const baseRgb = isDark ? "0,255,90" : "10,138,53";
+
       if (!mobile || frame % 2 === 0) {
-        ctx.fillStyle = "rgba(0,255,90,0.35)";
+        ctx.fillStyle = `rgba(${baseRgb},0.35)`;
         ctx.font = `${12 * dpr}px JetBrains Mono, monospace`;
         for (let i = 0; i < drops.length; i++) {
           const ch = chars[Math.floor(Math.random() * chars.length)];
@@ -519,7 +531,7 @@ function Index() {
           const d2 = dx * dx + dy * dy;
           if (d2 < maxD2) {
             const d = Math.sqrt(d2);
-            ctx.strokeStyle = `rgba(0,255,90,${(1 - d / maxD) * 0.25})`;
+            ctx.strokeStyle = `rgba(${baseRgb},${(1 - d / maxD) * 0.25})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
@@ -528,7 +540,7 @@ function Index() {
           }
         }
       }
-      ctx.fillStyle = "rgba(0,255,90,0.8)";
+      ctx.fillStyle = `rgba(${baseRgb},0.8)`;
       for (const p of pts) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 1.5 * dpr, 0, Math.PI * 2);
@@ -541,6 +553,7 @@ function Index() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVis);
+      themeObserver.disconnect();
     };
   }, []);
 

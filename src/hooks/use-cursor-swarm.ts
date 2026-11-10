@@ -109,6 +109,9 @@ export function useCursorSwarm(bootDone: boolean): { settled: boolean } {
       hudPosition: "bottom-right", // bottom-left is occupied by the side nav
       trigger: 0.88,
       deconstruct: true,
+      speed: 0.65,
+      maxSpeed: 1.4,
+      typeDuration: 2.2,
     }).init();
 
     // `stopped` = prefers-reduced-motion: the page stays a normal, fully visible page.
